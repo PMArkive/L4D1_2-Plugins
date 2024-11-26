@@ -264,7 +264,7 @@ void WitchAttackTarget(int witch, int target, int addHealth)
 		}
 
 		//重新燒witch追擊新目標target
-		SDKHooks_TakeDamage(witch, target, target, 0.0, DMG_BURN);
+		SDKHooks_TakeDamage(witch, target, target, 1.0, DMG_BURN);
 	}
 	else
 	{
@@ -375,12 +375,14 @@ void WitchHarasserSet_Event(Event event, const char[] name, bool dontBroadcast)
 //witch follows survivor
 void witch_spawn(Event event, const char[] event_name, bool dontBroadcast)
 {
-	if(g_bCvarAllow == false || GetRandomInt(0, 100) > g_iWitchChanceFollowsurvivor ) return;
+	if(g_bCvarAllow == false) return;
 
 	int witchid = event.GetInt("witchid");
 	bWitchScared[witchid] = false;
 	bWitchSit[witchid] = false;
-	CreateTimer(0.5, DelayHookWitch, EntIndexToEntRef(witchid), TIMER_FLAG_NO_MAPCHANGE );
+
+	if(GetRandomInt(0, 100) <= g_iWitchChanceFollowsurvivor) 
+		CreateTimer(0.5, DelayHookWitch, EntIndexToEntRef(witchid), TIMER_FLAG_NO_MAPCHANGE );
 
 	SDKHook(witchid, SDKHook_OnTakeDamagePost, WitchOnTakeDamagePost);	
 
@@ -782,31 +784,12 @@ Action BurnWitchDead_Timer(Handle timer, DataPack hPack)
 	
 	if ( witch != INVALID_ENT_REFERENCE )
 	{
-		SetEntProp(witch, Prop_Data, "m_iHealth", 1);
-		ForceDamageEntity(-1, 99999, witch);
+		int health = GetEntProp(witch, Prop_Data, "m_iHealth");
+		SDKHooks_TakeDamage(witch, witch, witch, float(health) + 100.0, DMG_BURN);
 	}
 
 	BurnWitchTimer[index] = null;
 	return Plugin_Continue;
-}
-
-void ForceDamageEntity(int causer, int damage, int victim)
-{
-	float victim_origin[3];
-	char rupture[32];
-	char damage_victim[32];
-	IntToString(damage, rupture, sizeof(rupture));
-	Format(damage_victim, sizeof(damage_victim), "hurtme%d", victim);
-	GetEntPropVector(victim, Prop_Send, "m_vecOrigin", victim_origin);
-	int entity = CreateEntityByName("point_hurt");
-	DispatchKeyValue(victim, "targetname", damage_victim);
-	DispatchKeyValue(entity, "DamageTarget", damage_victim);
-	DispatchKeyValue(entity, "Damage", rupture);
-	DispatchSpawn(entity);
-	TeleportEntity(entity, victim_origin, NULL_VECTOR, NULL_VECTOR);
-	AcceptEntityInput(entity, "Hurt", (causer > 0 && causer <= MaxClients) ? causer : -1);
-	DispatchKeyValue(victim, "targetname", "null");
-	AcceptEntityInput(entity, "Kill");
 }
 
 void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast) 
