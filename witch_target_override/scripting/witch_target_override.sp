@@ -1,8 +1,9 @@
 //Harry @ 2021~2024
+//This Plugin has been discontinued
 
 #pragma semicolon 1
 #pragma newdecls required
-#define PLUGIN_VERSION "2.3-2024/8/17"
+#define PLUGIN_VERSION "2.3-2024/8/17-discontinued"
 #define DEBUG 0
 
 #include <sourcemod>
@@ -11,6 +12,10 @@
 #include <actions>
 #undef REQUIRE_PLUGIN
 #tryinclude <l4d_witch_target_forever>
+
+#if !defined _l4d_witch_target_forever_included_
+	native int GetWitchInitialTarget(int witch);
+#endif
 
 public Plugin myinfo = 
 {
@@ -44,6 +49,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1 & 2.");
 		return APLRes_SilentFailure;
 	}
+
+	MarkNativeAsOptional("GetWitchInitialTarget");
 	
 	return APLRes_Success; 
 }
