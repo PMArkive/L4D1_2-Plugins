@@ -48,11 +48,6 @@ Change target when the witch incapacitates or kills victim + witch auto follows 
         ```
 </details>
 
-* <details><summary>Command | 命令</summary>
-
-    None
-</details>
-
 * Apply to | 適用於
     ```
     L4D1
