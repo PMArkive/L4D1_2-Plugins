@@ -52,14 +52,10 @@ Notifies selected team(s) when someone is on final strike and add glow
         ```
 </details>
 
-* <details><summary>Translation Support | 支援翻譯</summary>
-
-    ```
-    English
-    繁體中文
-    简体中文
-    ```
-</details>
+* Translation Support | 支援翻譯
+	```
+	translations/LMC_Black_and_White_Notifier.phrases.txt
+	```
 
 * <details><summary>Related Plugin | 相關插件</summary>
 
